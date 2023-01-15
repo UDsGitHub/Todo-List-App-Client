@@ -1,38 +1,79 @@
-.App {
-  text-align: center;
+.logo {
+  color: #78909c;
+  letter-spacing: 0.4em;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.login-btn, .register-btn{
+  font-size: clamp(14px, 4vw, 16px);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.register-btn {
+  background-color: rgb(3 105 161);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.input-container {
+  margin: 0 auto;
+  max-width: 550px;
 }
 
-.App-link {
-  color: #61dafb;
+.input-container input::placeholder {
+  font-style: italic;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.check-icon {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgb(8 145 178);
+  border-radius: 50%;
+  background-color: white;
+}
+
+.todo-item {
+  margin: 0 auto;
+  max-width: 550px;
+  position: relative;
+}
+
+.todo-item::before,
+.todo-item::after {
+  content: "";
+  display: block;
+  width: 97%;
+  position: absolute;
+  height: 5px;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.todo-item::after {
+  width: 95%;
+  height: 5px;
+  bottom: -12px;
+}
+
+.todo-item label {
+  flex-grow: 1;
+}
+
+.delete-btn {
+  opacity: 0;
+  transition: 0.25s;
+}
+
+.todo-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.todo-edit {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 1rem;
+  outline: none;
 }
