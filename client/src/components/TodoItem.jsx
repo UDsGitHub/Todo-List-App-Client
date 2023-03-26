@@ -1,19 +1,44 @@
 import React, { useContext, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 const TodoItem = ({ todo, index }) => {
+  const { user } = useContext(AppContext);
   const ESCAPE_KEY = 27;
   const ENTER_KEY = 13;
   const { todoList, setTodoList } = useContext(AppContext);
   const [editValue, setEditValue] = useState("");
   const editObj = useRef();
 
+  async function updateTodo(currTodo) {
+    try {
+      await axios.patch(`/user/${user._id}/updateTodo/${currTodo.id}`, {
+        task: currTodo.value,
+        completed: currTodo.completed,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function deleteTodo(currTodo) {
+    try {
+      await axios.delete(`/user/${user._id}/deleteTodo/${currTodo.id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   function handleDelete(todoIndex) {
     setTodoList(
-      todoList.filter((item, currIndex) => currIndex !== todoIndex && item)
+      todoList.filter((item, currIndex) => {
+        if (currIndex !== todoIndex) {
+          return item;
+        } else {
+          deleteTodo(item);
+          return;
+        }
+      })
     );
   }
 
@@ -21,6 +46,7 @@ const TodoItem = ({ todo, index }) => {
     setTodoList(
       todoList.map((item, currIndex) => {
         if (currIndex === todoIndex) {
+          updateTodo({ ...item, completed: !item.completed });
           return { ...item, completed: !item.completed };
         } else {
           return item;
@@ -42,9 +68,14 @@ const TodoItem = ({ todo, index }) => {
     editObj.current.style.display = "none";
     if (editValue !== "") {
       setTodoList(
-        todoList.map((item, currIndex) =>
-          currIndex === todoIndex ? { ...item, value: editValue } : item
-        )
+        todoList.map((item, currIndex) => {
+          if (currIndex === todoIndex) {
+            updateTodo({ ...item, value: editValue });
+            return { ...item, value: editValue };
+          } else {
+            return item;
+          }
+        })
       );
       setEditValue("");
     }
@@ -74,7 +105,7 @@ const TodoItem = ({ todo, index }) => {
           type="checkbox"
           id={`todo-${index}`}
           checked={todo.completed}
-          onClick={() => handleComplete(index)}
+          onChange={() => handleComplete(index)}
           className="hidden"
         />
         <div
@@ -82,10 +113,22 @@ const TodoItem = ({ todo, index }) => {
           onClick={() => handleComplete(index)}
         >
           {todo.completed ? (
-            <FontAwesomeIcon
-              icon={faCheck}
-              className="text-xl text-green-400"
-            />
+            <div className="text-xl text-green-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.5 12.75l6 6 9-13.5"
+                />
+              </svg>
+            </div>
           ) : null}
         </div>
       </div>
@@ -104,7 +147,20 @@ const TodoItem = ({ todo, index }) => {
         className="block ml-auto delete-btn"
         onClick={() => handleDelete(index)}
       >
-        <FontAwesomeIcon icon={faXmark} />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          className="w-6 h-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
       </button>
       <input
         type="text"
